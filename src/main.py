@@ -22,8 +22,6 @@ ex = Experiment("pymarl")
 ex.logger = logger
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
-results_path = join(dirname(dirname(abspath(__file__))))
-
 
 @ex.main
 def my_main(_run, _config, _log):
@@ -113,8 +111,8 @@ if __name__ == '__main__':
     algo_name = parse_command(params, "name", config_dict['name'])
     
     local_results_path = parse_command(params, "local_results_path", config_dict['local_results_path'])
-    file_obs_path = join(results_path, local_results_path, "sacred", map_name, algo_name)
-
+    local_results_path = os.path.expanduser(local_results_path)
+    file_obs_path = join(local_results_path, "sacred", map_name, algo_name)
     logger.info("Saving to FileStorageObserver in {}.".format(file_obs_path))
     ex.observers.append(FileStorageObserver.create(file_obs_path))
 

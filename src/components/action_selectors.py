@@ -143,13 +143,12 @@ class EpsilonGreedyActionSelector():
             agent_inputs.device) 
 
         pick_random = (random_numbers < self.epsilon).long()
-        # random_actions = Categorical(avail_actions.float()).sample().long()
-        random_actions = Categorical(avail_actions.cpu().float()).sample().long().to(avail_actions.device)
-        picked_actions = pick_random * random_actions + (1 - pick_random) * masked_q_values.max(dim=2)[1]
-    
-        assert (
-                    (avail_actions.gather(2, picked_actions.unsqueeze(-1)).squeeze(-1) == 1).all()
-            ), "Action selector selected Wrong Action"
+
+        while True:
+            random_actions = Categorical(avail_actions.cpu().float()).sample().long().to(avail_actions.device)
+            picked_actions = pick_random * random_actions + (1 - pick_random) * masked_q_values.max(dim=2)[1]
+            if (avail_actions.gather(2, picked_actions.unsqueeze(-1)).squeeze(-1) == 1).all():
+                break
 
         return picked_actions
 

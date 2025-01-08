@@ -2,14 +2,14 @@
 
 GRES="gpu:1"
 mkdir -p ../_log/$SLURM_JOB_ID
-SLURM_JOB_PARTITION="gpu6"
-cpus_per_task=15
+SLURM_JOB_PARTITION="gpu1"
+cpus_per_task=10
 
 # print sbatch job 
 echo "node: $HOSTNAME"
 echo "jobid: $SLURM_JOB_ID"
 
-for _ in {1..5}; do
+for _ in {1..3}; do
     srun --partition=$SLURM_JOB_PARTITION \
         --gres=$GRES \
         --cpus-per-task=$cpus_per_task \

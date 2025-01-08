@@ -1897,11 +1897,13 @@ class StarCraft2Env(MultiAgentEnv):
 
             if self.map_type in ["MMM", "terran_gen"] and unit.unit_type == self.medivac_id:
                 # Medivacs cannot heal themselves or other flying units
-                target_items = [(agent_id, unit)]
+                target_items = [(0, unit)]
+                
                 for (t_id, t_unit) in self.agents.items():
-                    if t_id != agent_id:
+                    if t_id < agent_id:
+                        target_items.append((t_id + 1, t_unit))
+                    if t_id > agent_id:
                         target_items.append((t_id, t_unit))
-                idx = 0
                 for t_id, t_unit in target_items:
                     if t_unit.health > 0 and t_unit.unit_type != self.medivac_id:
                         dist = self.distance(
@@ -1915,8 +1917,7 @@ class StarCraft2Env(MultiAgentEnv):
                             )
                         )
                         if can_shoot:
-                            avail_actions[idx + self.n_actions_no_attack] = 1
-                    idx += 1
+                            avail_actions[t_id + self.n_actions_no_attack] = 1
                 return avail_actions
             else:
                 for t_id, t_unit in self.enemies.items():
