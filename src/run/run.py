@@ -220,7 +220,8 @@ def run_sequential(args, logger):
         if args.save_model and (
                 runner.t_env - model_save_time >= args.save_model_interval or runner.t_env >= args.t_max):
             model_save_time = runner.t_env
-            save_path = os.path.join(args.local_results_path, "models",  args.unique_token, str(runner.t_env))
+            local_results_path = os.path.expanduser(args.local_results_path)
+            save_path = os.path.join(local_results_path, "models",  args.unique_token, str(runner.t_env))
             os.makedirs(save_path, exist_ok=True)
             logger.console_logger.info("Saving models to {}".format(save_path))
 

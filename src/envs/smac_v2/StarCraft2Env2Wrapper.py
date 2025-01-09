@@ -57,7 +57,6 @@ class StarCraft2Env2Wrapper(StarCraftCapabilityEnvWrapper):
             "state_component": self.get_state_component(),
             "map_type": self.env.map_type,
         }
-        print(env_info)
         return env_info
 
     def _get_medivac_ids(self):

@@ -2,7 +2,7 @@
 
 GRES="gpu:1"
 mkdir -p ../_log/$SLURM_JOB_ID
-SLURM_JOB_PARTITION="gpu1"
+SLURM_JOB_PARTITION="gpu6"
 cpus_per_task=10
 
 # print sbatch job 

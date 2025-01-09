@@ -22,7 +22,6 @@ ex = Experiment("pymarl")
 ex.logger = logger
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
-
 @ex.main
 def my_main(_run, _config, _log):
     # Setting the random seed throughout the modules
@@ -88,7 +87,6 @@ def parse_command(params, key, default):
 
 if __name__ == '__main__':
     params = deepcopy(sys.argv)
-
     # Get the defaults from default.yaml
     with open(os.path.join(os.path.dirname(__file__), "config", "default.yaml"), "r") as f:
         try:
@@ -100,9 +98,10 @@ if __name__ == '__main__':
     env_config = _get_config(params, "--env-config", "envs")
     alg_config = _get_config(params, "--config", "algs")
     # config_dict = {**config_dict, **env_config, **alg_config}
+
     config_dict = recursive_dict_update(config_dict, env_config)
     config_dict = recursive_dict_update(config_dict, alg_config)
-
+    
     # now add all the config to sacred
     ex.add_config(config_dict)
     
@@ -118,5 +117,4 @@ if __name__ == '__main__':
 
     ex.run_commandline(params)
 
-    # flush
     sys.stdout.flush()
