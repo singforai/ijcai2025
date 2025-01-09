@@ -1,10 +1,8 @@
 import torch as th
 import torch.nn as nn
-from torch.nn.utils.rnn import pad_sequence
 
 from modules.layer.mast_attention import CrossAttentionBlock, QueryKeyBlock
 
-import torch.autograd.profiler as profiler
 class MAST_RNNAgent(nn.Module):
     def __init__(self, input_shape, args):
         super(MAST_RNNAgent, self).__init__()

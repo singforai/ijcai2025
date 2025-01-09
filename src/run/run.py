@@ -47,7 +47,7 @@ def run(_run, _config, _log):
 
     # sacred is on by default
     logger.setup_sacred(_run)
-
+    
     # Run and train
     run_sequential(args=args, logger=logger)
 
@@ -75,20 +75,17 @@ def evaluate_sequential(args, runner):
         runner.save_replay()
 
     runner.close_env()
+    
 
-
-def run_sequential(args, logger):
-    # Init runner so we can get env info
+def setup(args, logger, init = False):
     runner = r_REGISTRY[args.runner](args=args, logger=logger)
-
-    # Set up schemes and groups here
     env_info = runner.get_env_info()
     args.n_agents = env_info["n_agents"]
     args.n_actions = env_info["n_actions"]
     args.state_shape = env_info["state_shape"]
     args.obs_shape = env_info["obs_shape"]
     args.accumulated_episodes = getattr(args, "accumulated_episodes", None)
-
+    
     if args.env in ["sc2", "sc2_v2", "gfootball"]:
         if args.env in ["sc2", "sc2_v2"]:
             args.output_normal_actions = env_info["n_normal_actions"]
@@ -119,11 +116,11 @@ def run_sequential(args, logger):
     preprocess = {
         "actions": ("actions_onehot", [OneHot(out_dim=args.n_actions)])
     }
-    # [batch, episode_length, n_agents, feature_dim]
+
     buffer = ReplayBuffer(scheme, groups, args.buffer_size, env_info["episode_limit"] + 1,
                           preprocess=preprocess,
                           device="cpu" if args.buffer_cpu_only else args.device)
-    # Setup multiagent controller here
+
     mac = mac_REGISTRY[args.mac](buffer.scheme, groups, args)
 
     # Give runner the scheme
@@ -131,6 +128,12 @@ def run_sequential(args, logger):
 
     # Learner
     learner = le_REGISTRY[args.learner](mac, buffer.scheme, logger, args)
+    
+    return args, runner, buffer, learner
+    
+def run_sequential(args, logger):
+    # Init runner so we can get env info
+    args, runner, buffer, learner = setup(args, logger, init = True)
 
     if args.use_cuda:
         learner.cuda()
@@ -138,7 +141,6 @@ def run_sequential(args, logger):
     if args.checkpoint_path != "":
         timesteps = []
         timestep_to_load = 0
-
         if not os.path.isdir(args.checkpoint_path):
             logger.console_logger.info("Checkpoint directiory {} doesn't exist".format(args.checkpoint_path))
             return

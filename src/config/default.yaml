@@ -57,3 +57,9 @@ enable_parallel_computing: False
 cpu_inference: False
 #cpu_inference: False
 asn_hidden_size: 32 # 
+
+# --- Curriculum Learning ---
+use_CL: False # Use Curriculum Learning
+curriculum:
+  - 5
+  - 10
