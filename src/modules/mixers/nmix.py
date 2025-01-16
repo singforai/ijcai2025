@@ -16,8 +16,8 @@ class Mixer(nn.Module):
 
         self.abs = abs # monotonicity constraint
         self.qmix_pos_func = getattr(self.args, "qmix_pos_func", "abs")
-        assert self.qmix_pos_func == "abs"
         
+        assert self.qmix_pos_func == "abs"
         # hyper w1 b1
         self.hyper_w1 = nn.Sequential(nn.Linear(self.input_dim, args.hypernet_embed),
                                         nn.ReLU(inplace=True),

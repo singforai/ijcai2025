@@ -8,21 +8,23 @@ from components.episode_buffer import EpisodeBatch
 from modules.mixers.nmix import Mixer
 from modules.mixers.qatten import QattenMixer
 from modules.mixers.vdn import VDNMixer
-from modules.mixers.pi_mixer import PIMixer
+from modules.mixers.ss_mixer import SSMixer
+from modules.mixers.flex_qmix import FlexQMixer
 from utils.rl_utils import build_td_lambda_targets, build_q_lambda_targets
 from utils.th_utils import get_parameters_num
 
 
-def calculate_target_q(target_mac, batch, enable_parallel_computing=False, thread_num=4):
+def calculate_target_q(target_mac, batch, n_agents, enable_parallel_computing=False, thread_num=4):
     if enable_parallel_computing:
         th.set_num_threads(thread_num)
     with th.no_grad():
         # Set target mac to testing mode
         target_mac.set_evaluation_mode()
         target_mac_out = []
-        target_mac.init_hidden(batch.batch_size)
+        
+        target_mac.init_hidden(batch.batch_size, n_agents)
         for t in range(batch.max_seq_length):
-            target_agent_outs = target_mac.forward(batch, t=t)
+            target_agent_outs = target_mac.forward(batch, t=t, test_mode = False)
             target_mac_out.append(target_agent_outs)
 
         # We don't need the first timesteps Q-Value estimate for calculating targets
@@ -30,7 +32,7 @@ def calculate_target_q(target_mac, batch, enable_parallel_computing=False, threa
         return target_mac_out
 
 
-def calculate_n_step_td_target(target_mixer, target_max_qvals, batch, rewards, terminated, mask, gamma, td_lambda,
+def calculate_n_step_td_target(args, target_mixer, target_max_qvals, batch, rewards, terminated, mask, gamma, td_lambda,
                                enable_parallel_computing=False, thread_num=4, q_lambda=False, target_mac_out=None):
     if enable_parallel_computing:
         th.set_num_threads(thread_num)
@@ -39,6 +41,7 @@ def calculate_n_step_td_target(target_mixer, target_max_qvals, batch, rewards, t
         # Set target mixing net to testing mode
         target_mixer.eval()
         # Calculate n-step Q-Learning targets
+        
         target_max_qvals = target_mixer(target_max_qvals, batch["state"])
 
         if q_lambda:
@@ -67,8 +70,10 @@ class NQLearner:
             self.mixer = VDNMixer()
         elif args.mixer == "qmix":  # 31.521K
             self.mixer = Mixer(args)
-        elif args.mixer == "pi_mixer":
-            self.mixer = PIMixer(args)
+        elif args.mixer == "ss_mixer":
+            self.mixer = SSMixer(args)
+        elif args.mixer == "flex_mixer":
+            self.mixer = FlexQMixer(args)
         else:
             raise "mixer error"
 
@@ -77,7 +82,7 @@ class NQLearner:
 
         print('Mixer Size: ')
         print(get_parameters_num(self.mixer.parameters()))
-
+        
         if self.args.optimizer == 'adam':
             self.optimiser = Adam(params=self.params, lr=args.lr, weight_decay=getattr(args, "weight_decay", 0))
         else:
@@ -97,7 +102,10 @@ class NQLearner:
             # Multiprocessing pool for parallel computing.
             self.pool = Pool(1)
 
+
+
     def train(self, batch: EpisodeBatch, t_env: int, episode_num: int):
+
         start_time = time.time()
         if self.args.use_cuda and str(self.mac.get_device()) == "cpu":
             self.mac.cuda()
@@ -113,19 +121,20 @@ class NQLearner:
         if self.enable_parallel_computing:
             target_mac_out = self.pool.apply_async(
                 calculate_target_q,
-                (self.target_mac, batch, True, self.args.thread_num)
+                (self.target_mac, batch, self.args.n_agents, True, self.args.thread_num)
             )
 
         # Calculate estimated Q-Values
         self.mac.set_train_mode()
         mac_out = []
-        self.mac.init_hidden(batch.batch_size)
+        
+        self.mac.init_hidden(batch.batch_size, n_agents = self.args.n_agents)
         for t in range(batch.max_seq_length):
-            agent_outs = self.mac.forward(batch, t=t)
+            agent_outs = self.mac.forward(batch, t=t, test_mode = False)
             mac_out.append(agent_outs)
         mac_out = th.stack(mac_out, dim=1)  # Concat over time
         # TODO: double DQN action, COMMENT: do not need copy
-        mac_out[avail_actions == 0] = -9999999
+        mac_out[avail_actions == 0] = -65504 # float 16 / -9999999: float 32
         # Pick the Q-Values for the actions taken by each agent
         chosen_action_qvals = th.gather(mac_out[:, :-1], dim=3, index=actions).squeeze(3)  # Remove the last dim
 
@@ -134,7 +143,7 @@ class NQLearner:
             if self.enable_parallel_computing:
                 target_mac_out = target_mac_out.get()
             else:
-                target_mac_out = calculate_target_q(self.target_mac, batch)
+                target_mac_out = calculate_target_q(self.target_mac, batch, self.args.n_agents)
 
             # Max over target Q-Values/ Double q learning
             # mac_out_detach = mac_out.clone().detach()
@@ -148,13 +157,13 @@ class NQLearner:
             assert getattr(self.args, 'q_lambda', False) == False
             if self.args.mixer.find("qmix") != -1 and self.enable_parallel_computing:
                 targets = self.pool.apply_async(
-                    calculate_n_step_td_target,
-                    (self.target_mixer, target_max_qvals, batch, rewards, terminated, mask, self.args.gamma,
-                     self.args.td_lambda, True, self.args.thread_num, False, None)
+                    calculate_n_step_td_target(
+                    self.args, self.target_mixer, target_max_qvals, batch, rewards, terminated, mask, self.args.gamma,
+                    self.args.td_lambda, True, self.args.thread_num, False, None)
                 )
             else:
                 targets = calculate_n_step_td_target(
-                    self.target_mixer, target_max_qvals, batch, rewards, terminated, mask, self.args.gamma,
+                    self.args, self.target_mixer, target_max_qvals, batch, rewards, terminated, mask, self.args.gamma,
                     self.args.td_lambda
                 )
 
@@ -202,7 +211,8 @@ class NQLearner:
             self.logger.log_stat("q_taken_mean", q_taken_mean, t_env)
             self.logger.log_stat("target_mean", target_mean, t_env)
             self.log_stats_t = t_env
-
+        th.cuda.empty_cache()
+        
     def _update_targets(self):
         self.target_mac.load_state(self.mac)
         if self.mixer is not None:

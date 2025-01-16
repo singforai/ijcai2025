@@ -66,7 +66,7 @@ class MultiheadAttention(nn.Module):
         values = self.project_values(values)  # shape [b, m, d]
         
         if masks is not None:
-            masks = masks.unsqueeze(0).repeat([h, 1, 1, 1])
+            masks = masks.unsqueeze(0).repeat(h, 1, 1, 1)
             masks = masks.view(h * b, n, m)
         
         queries = queries.view(b, n, h, p)
@@ -202,7 +202,6 @@ class PoolingMultiheadAttention(nn.Module):
         # they return mab(s, rff(z))
         return self.mab(s, z)
     
-
 class Matmul(nn.Module):
     """Scaled Dot-Product Attention."""
     def __init__(self, temperature):
@@ -244,7 +243,7 @@ class QKBlock(nn.Module):
         Returns:
             a float tensor with shape [b, n, d].
         """
-
+        
         h = self.h
         b, n, d = queries.size()
         _, m, _ = keys.size()

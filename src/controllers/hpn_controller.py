@@ -27,7 +27,7 @@ class HPNMAC(BasicMAC):
         return (move_feats_dim, enemy_feats_dim_flatten, ally_feats_dim_flatten, own_feats_dim), (
             enemy_feats_dim, ally_feats_dim)
 
-    def _build_inputs(self, batch, t):
+    def _build_inputs(self, batch, t, test_mode):
         bs = batch.batch_size
         obs_component_dim, _ = self._get_obs_component_dim()
         raw_obs_t = batch["obs"][:, t]  # [batch, agent_num, obs_dim]

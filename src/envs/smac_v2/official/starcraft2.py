@@ -1842,10 +1842,10 @@ class StarCraft2Env(MultiAgentEnv):
                     )  # cooldown
                 ally_state[al_id, 2] = (
                     x - center_x
-                ) / self.max_distance_x  # relative X
+                ) / self.max_distance_x  
                 ally_state[al_id, 3] = (
                     y - center_y
-                ) / self.max_distance_y  # relative Y
+                ) / self.max_distance_y 
 
                 ind = 4
                 if self.shield_bits_ally > 0:
@@ -1881,10 +1881,10 @@ class StarCraft2Env(MultiAgentEnv):
                 )  # health
                 enemy_state[e_id, 1] = (
                     x - center_x
-                ) / self.max_distance_x  # relative X
+                ) / self.max_distance_x  
                 enemy_state[e_id, 2] = (
                     y - center_y
-                ) / self.max_distance_y  # relative Y
+                ) / self.max_distance_y 
 
                 if self.shield_bits_enemy > 0:
                     max_shield = self.unit_max_shield(e_unit)
@@ -2162,34 +2162,40 @@ class StarCraft2Env(MultiAgentEnv):
                         target_items.append((t_id, t_unit))
                 for t_id, t_unit in target_items:
                     if t_unit.health > 0 and t_unit.unit_type != self.medivac_id:
-                        dist = self.distance(
-                            unit.pos.x, unit.pos.y, t_unit.pos.x, t_unit.pos.y
-                        )
-                        can_shoot = (
-                            dist <= shoot_range
-                            if not self.conic_fov
-                            else self.is_position_in_cone(
-                                agent_id, t_unit.pos, range="shoot_range"
-                            )
-                        )
-                        if can_shoot:
+                        if not self.action_mask:
                             avail_actions[t_id + self.n_actions_no_attack] = 1
+                        else:
+                            dist = self.distance(
+                                unit.pos.x, unit.pos.y, t_unit.pos.x, t_unit.pos.y
+                            )
+                            can_shoot = (
+                                dist <= shoot_range
+                                if not self.conic_fov
+                                else self.is_position_in_cone(
+                                    agent_id, t_unit.pos, range="shoot_range"
+                                )
+                            )
+                            if can_shoot:
+                                avail_actions[t_id + self.n_actions_no_attack] = 1
                 return avail_actions
             else:
                 for t_id, t_unit in self.enemies.items():
                     if t_unit.health > 0:
-                        dist = self.distance(
-                            unit.pos.x, unit.pos.y, t_unit.pos.x, t_unit.pos.y
-                        )
-                        can_shoot = (
-                            dist <= shoot_range
-                            if not self.conic_fov
-                            else self.is_position_in_cone(
-                                agent_id, t_unit.pos, range="shoot_range"
-                            )
-                        )
-                        if can_shoot:
+                        if not self.action_mask:
                             avail_actions[t_id + self.n_actions_no_attack + self.n_agents] = 1
+                        else:
+                            dist = self.distance(
+                                unit.pos.x, unit.pos.y, t_unit.pos.x, t_unit.pos.y
+                            )
+                            can_shoot = (
+                                dist <= shoot_range
+                                if not self.conic_fov
+                                else self.is_position_in_cone(
+                                    agent_id, t_unit.pos, range="shoot_range"
+                                )
+                            )
+                            if can_shoot:
+                                avail_actions[t_id + self.n_actions_no_attack + self.n_agents] = 1
                 return avail_actions
         else:
             # only no-op allowed
@@ -2456,7 +2462,7 @@ class StarCraft2Env(MultiAgentEnv):
             except (protocol.ProtocolError, protocol.ConnectionError):
                 self.full_restart()
                 self.reset(episode_config=episode_config)
-        for i in range(1000):
+        while True:
             # Sometimes not all units have yet been created by SC2
             self.agents = {}
             self.enemies = {}

@@ -29,7 +29,7 @@ class BasicMAC:
         return chosen_actions
 
     def forward(self, ep_batch, t, test_mode=False):
-        agent_inputs = self._build_inputs(ep_batch, t)
+        agent_inputs = self._build_inputs(ep_batch, t, test_mode)
         avail_actions = ep_batch["avail_actions"][:, t]
         agent_outs, self.hidden_states = self.agent(agent_inputs, self.hidden_states)
 
@@ -45,10 +45,10 @@ class BasicMAC:
             
         return agent_outs.view(ep_batch.batch_size, self.n_agents, -1)
 
-    def init_hidden(self, batch_size):
+    def init_hidden(self, batch_size, n_agents):
         self.hidden_states = self.agent.init_hidden()
         if self.hidden_states is not None:
-            self.hidden_states = self.hidden_states.unsqueeze(0).expand(batch_size, self.n_agents, -1)  # bav
+            self.hidden_states = self.hidden_states.unsqueeze(0).expand(batch_size, n_agents, -1)  # bav
 
     def set_train_mode(self):
         self.agent.train()

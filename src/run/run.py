@@ -16,6 +16,8 @@ from controllers import REGISTRY as mac_REGISTRY
 from components.episode_buffer import ReplayBuffer
 from components.transforms import OneHot
 
+from run.curriculum import Curriculum_Manager
+
 
 def run(_run, _config, _log):
     # check args sanity
@@ -77,8 +79,19 @@ def evaluate_sequential(args, runner):
     runner.close_env()
     
 
-def setup(args, logger, init = False):
-    runner = r_REGISTRY[args.runner](args=args, logger=logger)
+def init_env(args, logger, init = False, eval_args = None, runner = None, learner = None):
+    use_CL = args.use_CL
+    
+    if not init and use_CL:
+        _t_env = runner.t_env
+        _agent = learner.mac
+        _target_agent = learner.target_mac
+        _mixer = learner.mixer.state_dict()
+        _target_mixer = learner.target_mixer.state_dict()
+        _optimiser = learner.optimiser.state_dict()
+    
+    runner = r_REGISTRY[args.runner](args=args, logger=logger, eval_args=eval_args)
+    
     env_info = runner.get_env_info()
     args.n_agents = env_info["n_agents"]
     args.n_actions = env_info["n_actions"]
@@ -99,6 +112,8 @@ def setup(args, logger, init = False):
         args.state_component = env_info["state_component"]
         args.map_type = env_info["map_type"]
         args.agent_own_state_size = env_info["state_ally_feats_size"]
+        
+        
 
     # Default/Base scheme
     scheme = {
@@ -116,24 +131,57 @@ def setup(args, logger, init = False):
     preprocess = {
         "actions": ("actions_onehot", [OneHot(out_dim=args.n_actions)])
     }
-
     buffer = ReplayBuffer(scheme, groups, args.buffer_size, env_info["episode_limit"] + 1,
                           preprocess=preprocess,
                           device="cpu" if args.buffer_cpu_only else args.device)
+        
+    if use_CL:
+        eval_env_info = runner.eval_env_info
 
-    mac = mac_REGISTRY[args.mac](buffer.scheme, groups, args)
+        eval_args.n_enemies = eval_env_info["n_enemies"]
+        eval_args.n_allies = eval_env_info["n_allies"]
+        eval_args.state_ally_feats_size = eval_env_info["state_ally_feats_size"]
+        eval_args.state_enemy_feats_size = eval_env_info["state_enemy_feats_size"]
+        eval_args.obs_component = eval_env_info["obs_component"]
+        eval_args.state_component = eval_env_info["state_component"]
+        eval_args.map_type = eval_env_info["map_type"]
+        eval_args.agent_own_state_size = eval_env_info["state_ally_feats_size"]        
 
-    # Give runner the scheme
+        eval_scheme = {
+            "state": {"vshape": eval_env_info["state_shape"]},
+            "obs": {"vshape": eval_env_info["obs_shape"], "group": "agents"},
+            "actions": {"vshape": (1,), "group": "agents", "dtype": th.long},
+            "avail_actions": {"vshape": (eval_env_info["n_actions"],), "group": "agents", "dtype": th.int},
+            "probs": {"vshape": (eval_env_info["n_actions"],), "group": "agents", "dtype": th.float},
+            "reward": {"vshape": (1,)},
+            "terminated": {"vshape": (1,), "dtype": th.uint8},
+        }
+        eval_groups = {
+            "agents": eval_env_info["n_agents"]
+        }
+        eval_preprocess = {
+            "actions": ("actions_onehot", [OneHot(out_dim=eval_env_info["n_actions"])])
+        }
+        mac = mac_REGISTRY[args.mac](buffer.scheme, groups, args, eval_args)
+        
+        if not init:
+            runner.t_env = _t_env
+            
+        runner.eval_setup(scheme=eval_scheme, groups=eval_groups, preprocess=eval_preprocess, mac = mac)
+    else:
+        mac = mac_REGISTRY[args.mac](buffer.scheme, groups, args)
     runner.setup(scheme=scheme, groups=groups, preprocess=preprocess, mac=mac)
 
     # Learner
     learner = le_REGISTRY[args.learner](mac, buffer.scheme, logger, args)
-    
-    return args, runner, buffer, learner
-    
-def run_sequential(args, logger):
-    # Init runner so we can get env info
-    args, runner, buffer, learner = setup(args, logger, init = True)
+
+    if not init and use_CL:
+        learner.mac.load_state(_agent)
+        learner.target_mac.load_state(_target_agent)
+        learner.mixer.load_state_dict(_mixer)
+        learner.target_mixer.load_state_dict(_target_mixer)
+        learner.optimiser.load_state_dict(_optimiser)
+        print(f"Curriculum Upgrade Complete!!!")
 
     if args.use_cuda:
         learner.cuda()
@@ -169,6 +217,19 @@ def run_sequential(args, logger):
             evaluate_sequential(args, runner)
             return
 
+    return args, runner, buffer, learner
+
+def run_sequential(args, logger):
+    use_CL = args.use_CL
+    eval_args = None
+    if use_CL:
+        CL_manager = Curriculum_Manager(args)
+        basic_args = args
+        args = CL_manager.init_train_args(basic_args)
+        eval_args = CL_manager.init_eval_args(basic_args)
+    # Init runner so we can get env info
+    args, runner, buffer,learner  = init_env(args, logger, init = True, eval_args = eval_args)
+
     # start training
     episode = 0
     last_test_T = -args.test_interval - 1
@@ -181,7 +242,13 @@ def run_sequential(args, logger):
     logger.console_logger.info("Beginning training for {} timesteps".format(args.t_max))
 
     while runner.t_env <= args.t_max:
-        
+        if use_CL:
+            args, upgrade = CL_manager.update(args, runner.t_env)
+            if upgrade:
+                args, runner, buffer,learner = init_env(args, logger, init = False, eval_args = eval_args, \
+                    runner = runner, learner = learner)
+            print(f"Current Curriculum Level: {args.env_args['capability_config']['n_units']}v{args.env_args['capability_config']['n_enemies']}")
+                
         # Run for a whole episode at a time
         with th.no_grad():
             # t_start = time.time()
@@ -218,6 +285,7 @@ def run_sequential(args, logger):
             with th.no_grad():
                 for _ in range(n_test_runs):
                     runner.run(test_mode=True)
+                    th.cuda.empty_cache()
 
         if args.save_model and (
                 runner.t_env - model_save_time >= args.save_model_interval or runner.t_env >= args.t_max):
@@ -236,6 +304,8 @@ def run_sequential(args, logger):
             logger.log_stat("episode_in_buffer", buffer.episodes_in_buffer, runner.t_env)
             logger.print_recent_stats()
             last_log_T = runner.t_env
+
+        th.cuda.empty_cache()
             
     runner.close_env()
     logger.console_logger.info("Finished Training")

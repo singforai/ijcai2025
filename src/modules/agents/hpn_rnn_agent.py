@@ -235,7 +235,7 @@ class HPN_RNNAgent(nn.Module):
                 bs, self.n_agents, self.n_allies
             )  # [bs, n_agents, n_allies]
             # For the reason that medivac is the last indexed agent, so the rescue action idx -> [0, n_allies-1]
-            right_padding = th.ones_like(q_attack[:, -1:, self.n_allies:], requires_grad=False) * (-9999999)
+            right_padding = th.ones_like(q_attack[:, -1:, self.n_allies:], requires_grad=False) * (-65504)
             modified_q_attack_of_medivac = th.cat([q_rescue[:, -1:, :], right_padding], dim=-1)
             # Merge
             q_attack = th.cat([q_attack[:, :-1], modified_q_attack_of_medivac], dim=1)

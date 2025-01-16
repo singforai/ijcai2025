@@ -42,6 +42,17 @@ class EpisodeRunner:
         self.new_batch = partial(EpisodeBatch, scheme, groups, self.batch_size, self.episode_limit + 1,
                                  preprocess=preprocess, device=self.batch_device)
         self.mac = mac
+        
+    def test_setup(self, scheme, groups, preprocess, mac):
+        
+        if self.args.use_cuda and not self.args.cpu_inference:
+            self.batch_device = self.args.device
+        else:
+            self.batch_device = "cpu" if self.args.buffer_cpu_only else self.args.device
+            
+        self.new_batch = partial(EpisodeBatch, scheme, groups, self.batch_size, self.episode_limit + 1,
+                                 preprocess=preprocess, device=self.batch_device)
+        self.mac = mac
 
     def get_env_info(self):
         return self.env.get_env_info()

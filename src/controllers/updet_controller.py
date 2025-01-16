@@ -30,7 +30,7 @@ class UPDETController(BasicMAC):
         ally_feats_dim = np.prod(ally_feats_dim)
         return move_feats_dim, enemy_feats_dim, ally_feats_dim, own_feats_dim
 
-    def _build_inputs(self, batch, t):
+    def _build_inputs(self, batch, t, test_mode):
         bs = batch.batch_size
         raw_obs = batch["obs"][:, t]  # [batch, agent_num, obs_dim]
         # assert raw_obs.shape[-1] == self._get_obs_shape()

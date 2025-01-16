@@ -11,15 +11,15 @@ import time
 # https://github.com/openai/baselines/blob/master/baselines/common/vec_env/subproc_vec_env.py
 class ParallelRunner:
 
-    def __init__(self, args, logger):
+    def __init__(self, args, logger, eval_args = None):
         self.args = args
+        self.eval_args = eval_args
+        
         self.logger = logger
         self.batch_size = self.args.batch_size_run
 
         # Make subprocesses for the envs
         self.parent_conns, self.worker_conns = zip(*[Pipe() for _ in range(self.batch_size)])
-        
-        
         
         env_fn = env_REGISTRY[self.args.env]
         self.ps = []
@@ -38,9 +38,25 @@ class ParallelRunner:
         self.parent_conns[0].send(("get_env_info", None))
         self.env_info = self.parent_conns[0].recv()
         self.episode_limit = self.env_info["episode_limit"]
-
+        self.n_agents = self.env_info["n_agents"]
+        
+        if self.eval_args is not None:
+            self.eval_parent_conns, self.eval_worker_conns = zip(*[Pipe() for _ in range(self.batch_size)])
+            eval_env_fn = env_REGISTRY[self.eval_args.env]
+            self.eval_ps = []
+            for i, eval_worker_conn in enumerate(self.eval_worker_conns):
+                ps = Process(target=env_worker,
+                             args=(eval_worker_conn, CloudpickleWrapper(partial(eval_env_fn, **self.eval_args.env_args))))
+                self.eval_ps.append(ps)
+            for p in self.eval_ps:
+                p.daemon = True
+                p.start()
+            
+            self.eval_parent_conns[0].send(("get_env_info", None))
+            self.eval_env_info = self.eval_parent_conns[0].recv()
+            self.eval_episode_limit = self.eval_env_info["episode_limit"]
+            self.eval_n_agents = self.eval_env_info["n_agents"]
         self.t = 0
-
         self.t_env = 0
 
         self.train_returns = []
@@ -60,9 +76,17 @@ class ParallelRunner:
         self.new_batch = partial(EpisodeBatch, scheme, groups, self.batch_size, self.episode_limit + 1,
                                  preprocess=preprocess, device=self.batch_device)
         self.mac = mac
-        self.scheme = scheme
-        self.groups = groups
-        self.preprocess = preprocess
+        
+    def eval_setup(self, scheme, groups, preprocess, mac):
+        if self.args.use_cuda and not self.args.cpu_inference:
+            self.batch_device = self.args.device
+        else:
+            self.batch_device = "cpu" if self.args.buffer_cpu_only else self.args.device
+        print(" &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& self.batch_device={}".format(
+            self.batch_device))
+        self.eval_new_batch = partial(EpisodeBatch, scheme, groups, self.batch_size, self.episode_limit + 1,
+                                 preprocess=preprocess, device=self.batch_device)
+        self.mac = mac
 
     def get_env_info(self):
         return self.env_info
@@ -74,43 +98,61 @@ class ParallelRunner:
         for parent_conn in self.parent_conns:
             parent_conn.send(("close", None))
 
-    def reset(self):
-        self.batch = self.new_batch()
-
+    def reset(self, test_mode):
+        if not test_mode or not self.args.use_CL:
+            self.batch = self.new_batch()
+        else:
+            self.batch = self.eval_new_batch()
+            
         if (self.args.use_cuda and self.args.cpu_inference) and str(self.mac.get_device()) != "cpu":
             self.mac.cpu()  # copy model to cpu
-
-        # Reset the envs
-        for parent_conn in self.parent_conns:
-            parent_conn.send(("reset", None))
-
+            
         pre_transition_data = {
             "state": [],
             "avail_actions": [],
             "obs": []
         }
-        # Get the obs, state and avail_actions back
-        for parent_conn in self.parent_conns:
-            data = parent_conn.recv()
-            pre_transition_data["state"].append(data["state"])
-            pre_transition_data["avail_actions"].append(data["avail_actions"])
-            pre_transition_data["obs"].append(data["obs"])
 
+        # Reset the envs
+        if not test_mode or not self.args.use_CL:
+            for parent_conn in self.parent_conns:
+                parent_conn.send(("reset", None))
+                
+            for parent_conn in self.parent_conns:
+                data = parent_conn.recv()
+                pre_transition_data["state"].append(data["state"])
+                pre_transition_data["obs"].append(data["obs"])
+                pre_transition_data["avail_actions"].append(data["avail_actions"])
+        else:
+            for parent_conn in self.eval_parent_conns:
+                parent_conn.send(("reset", None))
+                
+            for parent_conn in self.eval_parent_conns:
+                data = parent_conn.recv()
+                pre_transition_data["state"].append(data["state"])
+                pre_transition_data["obs"].append(data["obs"])
+                pre_transition_data["avail_actions"].append(data["avail_actions"])
+                
         self.batch.update(pre_transition_data, ts=0, mark_filled=True)
 
         self.t = 0
         self.env_steps_this_run = 0
+        
 
     def run(self, test_mode=False):
-        self.reset()
+        self.reset(test_mode)
+        
 
         all_terminated = False
         episode_returns = [0 for _ in range(self.batch_size)]
         episode_lengths = [0 for _ in range(self.batch_size)]
-        self.mac.init_hidden(batch_size=self.batch_size)
+        if not test_mode or not self.args.use_CL:
+            self.mac.init_hidden(batch_size=self.batch_size, n_agents = self.n_agents)
+        else:
+            self.mac.init_hidden(batch_size=self.batch_size, n_agents = self.eval_n_agents)
         terminated = [False for _ in range(self.batch_size)]
         envs_not_terminated = [b_idx for b_idx, termed in enumerate(terminated) if not termed]
-        final_env_infos = []  # may store extra stats like battle won. this is filled in ORDER OF TERMINATION
+        final_env_infos = []  
 
         save_probs = getattr(self.args, "save_probs", False)
         while True:
@@ -124,7 +166,7 @@ class ParallelRunner:
                                                   test_mode=test_mode)
 
             cpu_actions = actions.to("cpu").numpy()
-
+            
             # Update the actions taken
             actions_chosen = {
                 "actions": np.expand_dims(cpu_actions, axis=1),
@@ -133,21 +175,22 @@ class ParallelRunner:
                 actions_chosen["probs"] = probs.unsqueeze(1).to("cpu")
 
             self.batch.update(actions_chosen, bs=envs_not_terminated, ts=self.t, mark_filled=False)
-
+            
             # Send actions to each env
             action_idx = 0
-            for idx, parent_conn in enumerate(self.parent_conns):
-                if idx in envs_not_terminated:  # We produced actions for this env
-                    if not terminated[idx]:  # Only send the actions to the env if it hasn't terminated
-                        parent_conn.send(("step", cpu_actions[action_idx]))
-                    action_idx += 1  # actions is not a list over every env
-
-            # # Update envs_not_terminated
-            # envs_not_terminated = [b_idx for b_idx, termed in enumerate(terminated) if not termed]
-            # all_terminated = all(terminated)
-            # if all_terminated:
-            #     break
-
+            if not test_mode or not self.args.use_CL:
+                for idx, parent_conn in enumerate(self.parent_conns):
+                    if idx in envs_not_terminated:  # We produced actions for this env
+                        if not terminated[idx]:  # Only send the actions to the env if it hasn't terminated
+                            parent_conn.send(("step", cpu_actions[action_idx]))
+                        action_idx += 1  # actions is not a list over every env
+            else:
+                for idx, parent_conn in enumerate(self.eval_parent_conns):
+                    if idx in envs_not_terminated:
+                        if not terminated[idx]:
+                            parent_conn.send(("step", cpu_actions[action_idx]))
+                        action_idx += 1
+                    
             # Post step data we will insert for the current timestep
             post_transition_data = {
                 "reward": [],
@@ -160,29 +203,52 @@ class ParallelRunner:
                 "obs": []
             }
             # Receive data back for each unterminated env
-            for idx, parent_conn in enumerate(self.parent_conns):
-                if not terminated[idx]:
-                    data = parent_conn.recv()
-                    # Remaining data for this current timestep
-                    post_transition_data["reward"].append((data["reward"],))
+            if not test_mode or not self.args.use_CL:
+                for idx, parent_conn in enumerate(self.parent_conns):
+                    if not terminated[idx]:
+                        data = parent_conn.recv()
+                        # Remaining data for this current timestep
+                        post_transition_data["reward"].append((data["reward"],))
 
-                    episode_returns[idx] += data["reward"]
-                    episode_lengths[idx] += 1
-                    if not test_mode:
-                        self.env_steps_this_run += 1
+                        episode_returns[idx] += data["reward"]
+                        episode_lengths[idx] += 1
+                        if not test_mode:
+                            self.env_steps_this_run += 1
 
-                    env_terminated = False
-                    if data["terminated"]:
-                        final_env_infos.append(data["info"])
-                    if data["terminated"] and not data["info"].get("episode_limit", False):
-                        env_terminated = True
-                    terminated[idx] = data["terminated"]
-                    post_transition_data["terminated"].append((env_terminated,))
+                        env_terminated = False
+                        if data["terminated"]:
+                            final_env_infos.append(data["info"])
+                        if data["terminated"] and not data["info"].get("episode_limit", False):
+                            env_terminated = True
+                        terminated[idx] = data["terminated"]
+                        post_transition_data["terminated"].append((env_terminated,))
 
-                    # Data for the next timestep needed to select an action
-                    pre_transition_data["state"].append(data["state"])
-                    pre_transition_data["avail_actions"].append(data["avail_actions"])
-                    pre_transition_data["obs"].append(data["obs"])
+                        # Data for the next timestep needed to select an action
+                        pre_transition_data["state"].append(data["state"])
+                        pre_transition_data["avail_actions"].append(data["avail_actions"])
+                        pre_transition_data["obs"].append(data["obs"])
+            else:
+                for idx, parent_conn in enumerate(self.eval_parent_conns):
+                    if not terminated[idx]:
+                        data = parent_conn.recv()
+                        post_transition_data["reward"].append((data["reward"],))
+
+                        episode_returns[idx] += data["reward"]
+                        episode_lengths[idx] += 1
+                        if not test_mode:
+                            self.env_steps_this_run += 1
+
+                        env_terminated = False
+                        if data["terminated"]:
+                            final_env_infos.append(data["info"])
+                        if data["terminated"] and not data["info"].get("episode_limit", False):
+                            env_terminated = True
+                        terminated[idx] = data["terminated"]
+                        post_transition_data["terminated"].append((env_terminated,))
+
+                        pre_transition_data["state"].append(data["state"])
+                        pre_transition_data["avail_actions"].append(data["avail_actions"])
+                        pre_transition_data["obs"].append(data["obs"])
 
             # Add post_transiton data into the batch
             self.batch.update(post_transition_data, bs=envs_not_terminated, ts=self.t, mark_filled=False)
@@ -210,13 +276,22 @@ class ParallelRunner:
             self.t_env += self.env_steps_this_run
 
         # Get stats back for each env
-        for parent_conn in self.parent_conns:
-            parent_conn.send(("get_stats", None))
+        if not test_mode or not self.args.use_CL:
+            for parent_conn in self.parent_conns:
+                parent_conn.send(("get_stats", None))
 
-        env_stats = []
-        for parent_conn in self.parent_conns:
-            env_stat = parent_conn.recv()
-            env_stats.append(env_stat)
+            env_stats = []
+            for parent_conn in self.parent_conns:
+                env_stat = parent_conn.recv()
+                env_stats.append(env_stat)
+        else:
+            for parent_conn in self.eval_parent_conns:
+                parent_conn.send(("get_stats", None))
+
+            env_stats = []
+            for parent_conn in self.eval_parent_conns:
+                env_stat = parent_conn.recv()
+                env_stats.append(env_stat)
 
         cur_stats = self.test_stats if test_mode else self.train_stats
         cur_returns = self.test_returns if test_mode else self.train_returns

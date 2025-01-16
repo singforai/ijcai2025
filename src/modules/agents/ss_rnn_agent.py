@@ -1,16 +1,12 @@
 import torch as th
 import torch.nn as nn
 
-from modules.layer.mast_attention import CrossAttentionBlock, QueryKeyBlock
+from modules.layer.ss_attention import CrossAttentionBlock, QueryKeyBlock
 
-class MAST_RNNAgent(nn.Module):
+class SS_RNNAgent(nn.Module):
     def __init__(self, input_shape, args):
-        super(MAST_RNNAgent, self).__init__()
+        super(SS_RNNAgent, self).__init__()
         self.args = args
-        self.n_agents = self.args.n_agents
-        self.n_allies = self.args.n_allies
-        self.n_enemies = self.args.n_enemies
-        self.n_entities = self.n_agents + self.n_enemies
         self.n_actions = self.args.n_actions
         self.n_head = self.args.n_head
         self.hidden_size = self.args.hidden_size
@@ -56,14 +52,16 @@ class MAST_RNNAgent(nn.Module):
             batch x num_agents x hidden_size    
         """
         
-        bs, own_feats, ally_feats, enemy_feats  = inputs 
+        bs, own_feats, ally_feats, enemy_feats  = inputs
+        
+        self.n_agents = ally_feats.shape[1] + 1
         
         own_masks = ~th.all(own_feats == 0, dim=-1)
         ally_mask = ~th.all(ally_feats == 0, dim=-1)
         enemy_mask = ~th.all(enemy_feats == 0, dim=-1)
 
         masks = th.cat((own_masks, ally_mask, enemy_mask), dim=-1).unsqueeze(1)
-        
+  
         own_feats = self.own_embedding(own_feats)
         ally_feats = self.allies_embedding(ally_feats)
         enemy_feats = self.enemies_embedding(enemy_feats)
