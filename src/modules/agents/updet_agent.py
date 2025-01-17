@@ -51,6 +51,8 @@ class UPDeT(nn.Module):
         q_enemies = q_enemies.mean(dim=-1, keepdim=False)  # The average of the Move Action Q
         # concat basic action Q with enemy attack Q
         q = torch.cat((q_basic_actions, q_enemies), 1)
+        
+        
 
         return q, h  # [bs * n_agents, 6 + n_enemies], this shape will be reshaped to  [bs, n_agents, 6 + n_enemies] in forward() of the BasicMAC
 
@@ -102,7 +104,9 @@ class SelfAttention(nn.Module):
 
         dot = F.softmax(dot, dim=2)
         # - dot now has row-wise self-attention probabilities
-
+        
+        self.attention_score = dot
+        
         # apply the self attention to the values
         out = torch.bmm(dot, values).view(b, h, t, e)
 

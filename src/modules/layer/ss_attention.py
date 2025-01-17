@@ -16,6 +16,8 @@ class Attention(nn.Module):
             attention = attention.masked_fill(masks == 0, float(-1e10))
         
         attention = self.softmax(attention) # it has shape [b, n, m]
+        
+        self.attention_score = attention
         return th.bmm(attention, values)  # it has shape [b, n, d]
 
 

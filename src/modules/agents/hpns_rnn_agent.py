@@ -47,7 +47,7 @@ class HPNS_RNNAgent(nn.Module):
         self.n_heads = args.hpn_head_num
         self.rnn_hidden_dim = args.rnn_hidden_dim
 
-        # [4 + 1, (6, 5), (4, 5)]
+        # [4 + 1, (5, 5), (4, 5)]
         self.own_feats_dim, self.enemy_feats_dim, self.ally_feats_dim = input_shape
         self.enemy_feats_dim = self.enemy_feats_dim[-1]  # [n_enemies, feat_dim]
         self.ally_feats_dim = self.ally_feats_dim[-1]  # [n_allies, feat_dim]

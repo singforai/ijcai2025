@@ -10,6 +10,8 @@ from utils.timehelper import time_left, time_str
 from os.path import dirname, abspath
 import sys
 
+from copy import deepcopy
+
 from learners import REGISTRY as le_REGISTRY
 from runners import REGISTRY as r_REGISTRY
 from controllers import REGISTRY as mac_REGISTRY
@@ -67,15 +69,35 @@ def run(_run, _config, _log):
 
     # Making sure framework really exits
     os._exit(os.EX_OK)
+    
+def split_args(args):
+    main_args = args.main_model
+    sub_args = args.sub_model
+    del args.main_model
+    del args.sub_model
+    
+    args1 = deepcopy(args)
+    args2 = deepcopy(args)   
+    for key, value in main_args.items():
+        setattr(args1, key, value)
+    for key, value in sub_args.items():
+        setattr(args2, key, value)
+
+    return args1, args2
+
+def dual_evaluate_sequential(args, runner, sub_mac):
+    for id in range(args.test_nepisode):
+        runner.run(test_mode=True, sub_mac = sub_mac, id = id)
+    if args.save_replay:
+        runner.save_replay()
+    runner.close_env()
 
 
 def evaluate_sequential(args, runner):
     for _ in range(args.test_nepisode):
         runner.run(test_mode=True)
-
     if args.save_replay:
         runner.save_replay()
-
     runner.close_env()
     
 
@@ -213,11 +235,8 @@ def init_env(args, logger, init = False, eval_args = None, runner = None, learne
         learner.load_models(model_path)
         runner.t_env = timestep_to_load
 
-        if args.evaluate or args.save_replay:
-            evaluate_sequential(args, runner)
-            return
-
     return args, runner, buffer, learner
+
 
 def run_sequential(args, logger):
     use_CL = args.use_CL
@@ -228,7 +247,21 @@ def run_sequential(args, logger):
         args = CL_manager.init_train_args(basic_args)
         eval_args = CL_manager.init_eval_args(basic_args)
     # Init runner so we can get env info
-    args, runner, buffer,learner  = init_env(args, logger, init = True, eval_args = eval_args)
+    
+    if not args.check_model_attention_map:
+        args, runner, buffer,learner  = init_env(args, logger, init = True, eval_args = eval_args)
+    else:
+        args1, args2 = split_args(args)
+        
+        args1, runner1, buffer,learner1  = init_env(args1, logger, init = True, eval_args = eval_args)
+        args2, runner2, buffer,learner2  = init_env(args2, logger, init = True, eval_args = eval_args)
+        
+        dual_evaluate_sequential(args1, runner1, sub_mac = runner2.mac)
+        return 
+
+    if args.evaluate or args.save_replay:
+        evaluate_sequential(args, runner)
+        return
 
     # start training
     episode = 0
@@ -291,10 +324,10 @@ def run_sequential(args, logger):
                 runner.t_env - model_save_time >= args.save_model_interval or runner.t_env >= args.t_max):
             model_save_time = runner.t_env
             local_results_path = os.path.expanduser(args.local_results_path)
-            save_path = os.path.join(local_results_path, "models",  args.unique_token, str(runner.t_env))
+            save_path = os.path.join(local_results_path, "models", f"{args.env_args['map_name']}_{args.env_args['capability_config']['n_units']}", str(runner.t_env))
             os.makedirs(save_path, exist_ok=True)
             logger.console_logger.info("Saving models to {}".format(save_path))
-
+            
             # learner should handle saving/loading -- delegate actor save/load to mac,
             # use appropriate filenames to do critics, optimizer states
             learner.save_models(save_path)
@@ -326,5 +359,25 @@ def args_sanity_check(config, _log):
         config["test_nepisode"] = config["batch_size_run"]
     else:
         config["test_nepisode"] = (config["test_nepisode"] // config["batch_size_run"]) * config["batch_size_run"]
+        
+    if config["name"] == "attention_map":
+        config["check_model_attention_map"] = True
+    
+    if config["check_model_attention_map"]:
+        config["evaluate"] = True
+        config["use_CL"] = False
+        config["save_replay"] = True
+        config["local_results_path"] = "~/pymarl4/results/check_attention_map"
+        config["runner"] = "episode"
+        config["batch_size_run"] = 1 
 
+        print("Updating configuration parameters for checking attention map:")
+        print("- Setting 'evaluate' to True")
+        print("- Setting 'use_CL' to False")
+        print("- Setting 'save_replay' to True")
+        print("- Setting 'local_results_path' to '~/pymarl4/results/check_attention_map'")
+        print("- Setting 'runner' to 'episode'")
+        print("- Setting 'batch_size_run' to 1")
+
+        
     return config

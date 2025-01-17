@@ -26,6 +26,9 @@ ex.captured_out_filter = apply_backspaces_and_linefeeds
 def my_main(_run, _config, _log):
     # Setting the random seed throughout the modules
     config = config_copy(_config)
+    if config["check_model_attention_map"]:
+        config["seed"] = 0
+        print("\n\n\nSet seed to 0 for attention score checking.\n\n\n") # python main.py --config=attention_map --env-config=sc2_v2_protoss with env_args.capability_config.n_units=5 env_args.capability_config.n_enemies=5 check_model_attention_map=True
     random.seed(config["seed"])
     np.random.seed(config["seed"])
     th.manual_seed(config["seed"])

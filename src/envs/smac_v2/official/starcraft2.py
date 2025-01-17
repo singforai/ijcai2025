@@ -115,7 +115,7 @@ class StarCraft2Env(MultiAgentEnv):
         debug=False,
         prob_obs_enemy=1.0,
         action_mask=False,
-        use_extended_action_masking = False
+        use_extended_action_masking = False,
     ):
         """
         Create a StarCraftC2Env environment.
@@ -423,6 +423,7 @@ class StarCraft2Env(MultiAgentEnv):
         self._run_config = None
         self._sc2_proc = None
         self._controller = None
+        
         # Try to avoid leaking SC2 processes on shutdown
         atexit.register(lambda: self.close())
 
@@ -585,6 +586,7 @@ class StarCraft2Env(MultiAgentEnv):
                     60, "*"
                 )
             )
+        
         return self.get_obs(), self.get_state()
 
     def _restart(self):

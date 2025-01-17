@@ -19,7 +19,9 @@ class BasicMAC:
 
         self.hidden_states = None
 
-    def select_actions(self, ep_batch, t_ep, t_env, bs=slice(None), test_mode=False):
+    def select_actions(self, ep_batch, t_ep, t_env, bs=slice(None), test_mode=False, id = None):
+        if id is not None:
+            self.id = id
         if t_ep == 0:
             self.set_evaluation_mode()
         # Only select actions for the selected batch elements in bs
@@ -108,3 +110,15 @@ class BasicMAC:
             input_shape += self.n_agents
 
         return input_shape
+    
+    def extract_attention_score(self):
+        if self.args.name == "updet_vdn":
+            attention_scores = []
+            for tblock in self.agent.transformer.tblocks: 
+                attention_score = tblock.attention.attention_score
+                attention_scores.append(attention_score)
+            
+        if self.args.name == "mast_vdn":
+            attention_scores = self.agent.entity_attention.mab.multihead.attention.attention_score
+
+        return attention_scores
