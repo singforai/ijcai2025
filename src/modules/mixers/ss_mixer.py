@@ -8,6 +8,10 @@ class Hypernetwork(nn.Module):
     def __init__(self, args, input_shape, last_action = False):
         self.args = args
         super(Hypernetwork, self).__init__()
+        
+        if self.args.name == "hpn_vdn" or "hpn_qmix" or "updet_vdn" or "updet_qmix":
+            args.hypernet_embed = 48
+        
         self.n_head = args.mixing_n_head
         self.hypernet_embed = args.hypernet_embed
         self.input_shape = input_shape
