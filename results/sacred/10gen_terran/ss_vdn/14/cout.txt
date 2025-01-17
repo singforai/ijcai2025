@@ -408,3 +408,40 @@ Avg cost 0.7417248090108236 seconds
 Avg cost 0.7284830808639526 seconds
 Avg cost 0.7083415985107422 seconds
 Avg cost 0.6992992957433065 seconds
+Avg cost 0.6772087642124721 seconds
+Avg cost 0.657547801733017 seconds
+Avg cost 0.6545614666408963 seconds
+Avg cost 0.6594834089279176 seconds
+[INFO 21:09:43] my_main Updated target network
+Avg cost 0.7149281068281694 seconds
+Avg cost 0.7529302636782329 seconds
+Avg cost 0.7836298942565919 seconds
+Avg cost 0.8106942176818849 seconds
+Avg cost 0.7931249141693116 seconds
+Avg cost 0.7759501934051515 seconds
+Avg cost 0.761630465002621 seconds
+[INFO 21:10:03] my_main Recent Stats | t_env:      10062 | Episode:      256
+battle_won_mean:           0.0000	dead_allies_mean:          4.3750	dead_enemies_mean:         0.2500	ep_length_mean:           42.7500
+episode_in_buffer:       256.0000	epsilon:                   1.0000	grad_norm:                 6.1215	loss_td:                   0.5833
+q_taken_mean:              0.0455	return_max:                5.5118	return_mean:               2.8817	return_min:                1.1748
+return_std:                1.7013	target_mean:               0.2285	td_error_abs:              0.5833	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     4.6250	test_dead_enemies_mean:    0.0000	test_ep_length_mean:      44.7812	test_return_max:           1.4038
+test_return_mean:          0.1172	test_return_min:           0.0000	test_return_std:           0.2901	
+Avg cost 0.7850880490409005 seconds
+[INFO 21:10:07] my_main t_env: 10489 / 10000000
+[INFO 21:10:07] my_main Estimated time left: 20 hours, 45 minutes, 35 seconds. Time passed: 1 minutes, 27 seconds
+Avg cost 0.8087018163580645 seconds
+Avg cost 0.823362708091736 seconds
+Avg cost 0.8157989751724971 seconds
+Avg cost 0.8342687433416195 seconds
+Avg cost 0.8477784654368526 seconds
+Avg cost 0.9076250394185386 seconds
+Avg cost 0.9643661499023439 seconds
+Avg cost 1.0164007040170524 seconds
+Avg cost 1.0251948215343336 seconds
+Avg cost 1.0325983592442105 seconds
+Avg cost 1.0377044677734377 seconds
+Avg cost 1.0445685227711998 seconds
+Avg cost 1.0858919159058604 seconds
+Avg cost 1.1296395882964136 seconds
+Avg cost 1.1259154261964743 seconds
