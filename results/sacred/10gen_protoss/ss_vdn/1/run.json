@@ -1,0 +1,113 @@
+{
+  "artifacts": [],
+  "command": "my_main",
+  "experiment": {
+    "base_dir": "/root/ijcai2025/src",
+    "dependencies": [
+      "numpy==1.26.4",
+      "PyYAML==6.0.2",
+      "sacred==0.8.7",
+      "torch==2.4.1"
+    ],
+    "mainfile": "main.py",
+    "name": "pymarl",
+    "repositories": [
+      {
+        "commit": "72fd2e5a5a9145b9e22d7080b53cb27fa1840aa0",
+        "dirty": true,
+        "url": "https://github.com/singforai/ijcai2025.git"
+      },
+      {
+        "commit": "72fd2e5a5a9145b9e22d7080b53cb27fa1840aa0",
+        "dirty": true,
+        "url": "https://github.com/singforai/ijcai2025.git"
+      }
+    ],
+    "sources": [
+      [
+        "main.py",
+        "_sources/main_c57b197a13bbf1e9ecfe9b04118c172d.py"
+      ],
+      [
+        "utils/logging.py",
+        "_sources/logging_734a6cc80d5c81d65a98040b6bf9b40f.py"
+      ]
+    ]
+  },
+  "heartbeat": "2025-01-17T20:26:34.058536",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) Gold 5218R CPU @ 2.10GHz",
+    "gpus": {
+      "driver_version": "535.161.07",
+      "gpus": [
+        {
+          "model": "NVIDIA RTX A6000",
+          "persistence_mode": true,
+          "total_memory": 49140
+        },
+        {
+          "model": "NVIDIA RTX A6000",
+          "persistence_mode": true,
+          "total_memory": 49140
+        },
+        {
+          "model": "NVIDIA RTX A6000",
+          "persistence_mode": true,
+          "total_memory": 49140
+        },
+        {
+          "model": "NVIDIA RTX A6000",
+          "persistence_mode": true,
+          "total_memory": 49140
+        }
+      ]
+    },
+    "hostname": "phw",
+    "os": [
+      "Linux",
+      "Linux-6.2.0-26-generic-x86_64-with-glibc2.35"
+    ],
+    "python_version": "3.9.21"
+  },
+  "meta": {
+    "command": "my_main",
+    "config_updates": {
+      "use_sqca": true
+    },
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "use_sqca=True"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2025-01-17T20:24:28.080800",
+  "status": "INTERRUPTED",
+  "stop_time": "2025-01-17T20:26:34.067019"
+}

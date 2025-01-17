@@ -149,14 +149,14 @@ class SetAttentionBlock(nn.Module):
         super().__init__()
         self.mab = MultiheadAttentionBlock(d, h)
 
-    def forward(self, x):
+    def forward(self, x, masks = None):
         """
         Arguments:
             x: a float tensor with shape [b, n, d].
         Returns:
             a float tensor with shape [b, n, d].
         """
-        return self.mab(x, x)
+        return self.mab(x, x, masks = None)
     
 class CrossAttentionBlock(nn.Module):
 

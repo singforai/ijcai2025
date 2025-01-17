@@ -4,4 +4,4 @@ __pycache__/
 *.pyo
 
 
-src/scripts/_log
+./results/*

@@ -11,7 +11,7 @@ class Mixer(nn.Module):
 
         self.args = args
         
-        if self.args.name == "mast_vdn" or "mast_qmix":
+        if self.args.name == "ss_vdn" or "ss_qmix":
             args.hypernet_embed = 64
         
         self.n_agents = args.n_agents

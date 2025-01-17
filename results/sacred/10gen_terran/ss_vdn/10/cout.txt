@@ -1,0 +1,764 @@
+[INFO 20:45:25] pymarl Running command 'my_main'
+[INFO 20:45:25] pymarl Started run with ID "10"
+[DEBUG 20:45:25] pymarl Starting Heartbeat
+[DEBUG 20:45:25] my_main Started
+[INFO 20:45:25] my_main Experiment Parameters:
+[INFO 20:45:25] my_main 
+
+{   'action_selector': 'epsilon_greedy',
+    'agent': 'ss_rnn',
+    'agent_output_type': 'q',
+    'asn_hidden_size': 32,
+    'batch_size': 128,
+    'batch_size_run': 8,
+    'buffer_cpu_only': True,
+    'buffer_size': 5000,
+    'check_model_attention_map': False,
+    'checkpoint_path': '',
+    'cpu_inference': False,
+    'critic_lr': 0.0005,
+    'curriculum_menu': [   '5v5',
+                           '10v10',
+                           '15v15',
+                           '20v20'],
+    'double_q': True,
+    'enable_parallel_computing': False,
+    'env': 'sc2_v2',
+    'env_args': {   'capability_config': {   'n_enemies': 10,
+                                             'n_units': 10,
+                                             'start_positions': {   'dist_type': 'surrounded_and_reflect',
+                                                                    'map_x': 32,
+                                                                    'map_y': 32,
+                                                                    'p': 0.5},
+                                             'team_gen': {   'dist_type': 'weighted_teams',
+                                                             'observe': True,
+                                                             'unit_types': [   'marine',
+                                                                               'marauder',
+                                                                               'medivac'],
+                                                             'weights': [   0.45,
+                                                                            0.45,
+                                                                            0.1]}},
+                    'conic_fov': False,
+                    'continuing_episode': False,
+                    'debug': False,
+                    'difficulty': '7',
+                    'fully_observable': False,
+                    'game_version': None,
+                    'heuristic_ai': False,
+                    'heuristic_rest': False,
+                    'kill_unit_step_mul': 2,
+                    'map_name': '10gen_terran',
+                    'move_amount': 2,
+                    'num_fov_actions': 12,
+                    'obs_all_health': True,
+                    'obs_instead_of_state': False,
+                    'obs_last_action': False,
+                    'obs_own_health': True,
+                    'obs_own_pos': True,
+                    'obs_pathing_grid': False,
+                    'obs_starcraft': True,
+                    'obs_terrain_height': False,
+                    'obs_timestep_number': False,
+                    'replay_dir': '',
+                    'replay_prefix': '',
+                    'reward_death_value': 10,
+                    'reward_defeat': 0,
+                    'reward_negative_scale': 0.5,
+                    'reward_only_positive': True,
+                    'reward_scale': True,
+                    'reward_scale_rate': 20,
+                    'reward_sparse': False,
+                    'reward_win': 200,
+                    'seed': 766117384,
+                    'state_last_action': True,
+                    'state_timestep_number': False,
+                    'step_mul': 8,
+                    'use_extended_action_masking': False},
+    'epsilon_anneal_time': 100000,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 1.0,
+    'evaluate': False,
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'group_name': 'unex_ss_vdn',
+    'hidden_size': 64,
+    'label': 'default_label',
+    'learner': 'nq_learner',
+    'learner_log_interval': 10000,
+    'load_step': 0,
+    'local_results_path': '~/ijcai2025/results',
+    'log_interval': 10000,
+    'lr': 0.001,
+    'mac': 'ss_mac',
+    'mixer': 'vdn',
+    'n_head': 4,
+    'name': 'ss_vdn',
+    'obs_agent_id': False,
+    'obs_last_action': False,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'optimizer': 'adam',
+    'q_lambda': False,
+    'repeat_id': 1,
+    'rnn_hidden_dim': 64,
+    'run': 'default',
+    'runner': 'parallel',
+    'runner_log_interval': 10000,
+    'save_model': True,
+    'save_model_interval': 9000000,
+    'save_replay': False,
+    'seed': 766117384,
+    't_max': 10000000,
+    'target_update_interval': 200,
+    'td_lambda': 0.6,
+    'test_greedy': True,
+    'test_interval': 10000,
+    'test_nepisode': 32,
+    'thread_num': 12,
+    'use_CL': False,
+    'use_cuda': True,
+    'use_sqca': True,
+    'use_wandb': True,
+    'username': 'singfor7012'}
+
+[DEBUG 20:45:25] git.cmd Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/root/ijcai2025, stdin=None, shell=False, universal_newlines=False)
+[DEBUG 20:45:25] urllib3.connectionpool Starting new HTTPS connection (1): api.wandb.ai:443
+[DEBUG 20:45:25] urllib3.connectionpool https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 2013
+[DEBUG 20:45:25] urllib3.connectionpool https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 360
+wandb: Currently logged in as: singfor7012. Use `wandb login --relogin` to force relogin
+wandb: WARNING Path /root/ijcai2025/~/ijcai2025/results/ss_vdn__2025-01-17_20-45-25/wandb/ wasn't writable, using system temp directory.
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+[DEBUG 20:45:26] git.cmd Popen(['git', 'cat-file', '--batch-check'], cwd=/root/ijcai2025, stdin=<valid stream>, shell=False, universal_newlines=False)
+wandb: Tracking run with wandb version 0.19.4
+wandb: Run data is saved locally in /tmp/wandb/run-20250117_204525-mqrrenqr
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ss_vdn-seed766117384
+wandb: ⭐️ View project at https://wandb.ai/singfor7012/sc2_v2_10gen_terran_10
+wandb: 🚀 View run at https://wandb.ai/singfor7012/sc2_v2_10gen_terran_10/runs/mqrrenqr
+&&&&&&&&&&&&&&&&&&&&&& ss_rnn 48.134K
+ &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& self.batch_device=cuda
+Mixer Size: 
+0.0K
+[INFO 20:45:30] my_main Beginning training for 10000000 timesteps
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 41493 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-ou02m3pg/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 34481 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-pxbu815e/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 39551 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-86iko611/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 38909 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-6uerrk3s/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 45119 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-tp7xeswv/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 41459 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-i7nmbu9b/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 43185 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-th_bgqxs/
+[INFO 20:45:30] absl Launching SC2: /root/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 41205 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-34mxuaq4/
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:45119/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:43185/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:41493/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:38909/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:34481/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:41459/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:39551/sc2api, attempt: 0, running: True
+[INFO 20:45:30] absl Connecting to: ws://127.0.0.1:41205/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Version: B75689 (SC2.4.10)
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Build: Aug 12 2019 17:16:57
+Version: B75689 (SC2.4.10)
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Build: Aug 12 2019 17:16:57
+Build: Aug 12 2019 17:16:57
+Version: B75689 (SC2.4.10)
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Build: Aug 12 2019 17:16:57
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 38909 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-6uerrk3s/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 41205 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-34mxuaq4/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 41493 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-ou02m3pg/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 34481 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-pxbu815e/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 45119 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-tp7xeswv/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 41459 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-i7nmbu9b/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 43185 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-th_bgqxs/'
+Command Line: '"/root/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 39551 -dataDir /root/StarCraftII/ -tempDir /tmp/sc-86iko611/'
+Starting up...
+Starting up...
+Starting up...
+Starting up...
+Starting up...
+Starting up...
+Starting up...
+Starting up...
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+Startup Phase 1 complete
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:41205/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:45119/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:39551/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:43185/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:41459/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:34481/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:38909/sc2api, attempt: 1, running: True
+[INFO 20:45:31] absl Connecting to: ws://127.0.0.1:41493/sc2api, attempt: 1, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:41205/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:45119/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:39551/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:43185/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:34481/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:41459/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:38909/sc2api, attempt: 2, running: True
+[INFO 20:45:32] absl Connecting to: ws://127.0.0.1:41493/sc2api, attempt: 2, running: True
+Startup Phase 2 complete
+Startup Phase 2 complete
+Creating stub renderer...
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+Startup Phase 2 complete
+Creating stub renderer...
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:39551/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:41205/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:43185/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:34481/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:41459/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:38909/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:45119/sc2api, attempt: 3, running: True
+[INFO 20:45:33] absl Connecting to: ws://127.0.0.1:41493/sc2api, attempt: 3, running: True
+Listening on: 127.0.0.1:41459
+Listening on: 127.0.0.1:45119
+Listening on: 127.0.0.1:41493
+Startup Phase 3 complete. Ready for commands.
+Startup Phase 3 complete. Ready for commands.
+Startup Phase 3 complete. Ready for commands.
+Listening on: 127.0.0.1:38909
+Listening on: 127.0.0.1:34481
+Listening on: 127.0.0.1:43185
+Startup Phase 3 complete. Ready for commands.
+Startup Phase 3 complete. Ready for commands.
+Startup Phase 3 complete. Ready for commands.
+Listening on: 127.0.0.1:41205
+Listening on: 127.0.0.1:39551
+Startup Phase 3 complete. Ready for commands.
+Startup Phase 3 complete. Ready for commands.
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:34481/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:38909/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:41205/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:39551/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:41493/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:41459/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:43185/sc2api, attempt: 4, running: True
+[INFO 20:45:34] absl Connecting to: ws://127.0.0.1:45119/sc2api, attempt: 4, running: True
+ConnectHandler: Request from 127.0.0.1:43276 accepted
+ConnectHandler: Request from 127.0.0.1:46922 accepted
+ConnectHandler: Request from 127.0.0.1:51308 accepted
+ConnectHandler: Request from 127.0.0.1:40902 accepted
+ConnectHandler: Request from 127.0.0.1:37706 accepted
+ConnectHandler: Request from 127.0.0.1:59758 accepted
+ConnectHandler: Request from 127.0.0.1:59182 accepted
+ReadyHandler: 127.0.0.1:40902 ready
+ReadyHandler: 127.0.0.1:46922 ready
+ReadyHandler: 127.0.0.1:51308 ready
+ReadyHandler: 127.0.0.1:37706 ready
+ReadyHandler: 127.0.0.1:59758 ready
+ReadyHandler: 127.0.0.1:59182 ready
+ReadyHandler: 127.0.0.1:43276 ready
+ConnectHandler: Request from 127.0.0.1:57288 accepted
+ReadyHandler: 127.0.0.1:57288 ready
+Requesting to join a single player game
+Requesting to join a single player game
+Requesting to join a single player game
+Configuring interface options
+Configuring interface options
+Configuring interface options
+Configure: raw interface enabled
+Configure: raw interface enabled
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: feature layer interface disabled
+Configure: feature layer interface disabled
+Requesting to join a single player game
+Configure: score interface disabled
+Configure: score interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Configure: render interface disabled
+Configure: render interface disabled
+Configuring interface options
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Configure: raw interface enabled
+Requesting to join a single player game
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Configuring interface options
+Requesting to join a single player game
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configuring interface options
+Configure: score interface disabled
+Configure: render interface disabled
+Requesting to join a single player game
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configuring interface options
+Configure: score interface disabled
+Configure: render interface disabled
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Launching next game.
+Launching next game.
+Launching next game.
+Launching next game.
+Launching next game.
+Launching next game.
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 2
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 3
+Next launch phase started: 3
+Next launch phase started: 2
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 3
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 4
+Next launch phase started: 4
+Next launch phase started: 4
+Next launch phase started: 4
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 5
+Next launch phase started: 5
+Next launch phase started: 5
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 6
+Next launch phase started: 6
+Next launch phase started: 6
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 4
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 7
+Next launch phase started: 7
+Next launch phase started: 7
+Next launch phase started: 7
+Next launch phase started: 8
+Next launch phase started: 8
+Next launch phase started: 8
+Next launch phase started: 8
+Next launch phase started: 7
+Next launch phase started: 8
+Next launch phase started: 8
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+Sending ResponseJoinGame
+Game has started.
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+Sending ResponseJoinGame
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+Game has started.
+Successfully loaded stable ids: /root/StarCraftII/stableid.json
+Sending ResponseJoinGame
+/root/ijcai2025/src/components/episode_buffer.py:109: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /opt/conda/conda-bld/pytorch_1724789114325/work/torch/csrc/utils/tensor_new.cpp:278.)
+  v = th.tensor(v, dtype=dtype, device=self.device)
+/root/ijcai2025/src/components/episode_buffer.py:109: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  v = th.tensor(v, dtype=dtype, device=self.device)
+[INFO 20:45:47] my_main t_env: 383 / 10000000
+[INFO 20:45:47] my_main Estimated time left: 4 hours, 30 minutes, 35 seconds. Time passed: 16 seconds
+Avg cost 1.1372134685516357 seconds
+Avg cost 0.9431993961334229 seconds
+Avg cost 0.900833527247111 seconds
+Avg cost 1.0208860635757446 seconds
+Avg cost 1.0397867202758788 seconds
+Avg cost 1.0032288233439126 seconds
+Avg cost 1.0215186050959995 seconds
+Avg cost 1.0433351397514343 seconds
+Avg cost 1.1431948873731825 seconds
+Avg cost 1.218422293663025 seconds
+[INFO 20:46:57] my_main Updated target network
+Avg cost 1.2755463123321533 seconds
+Avg cost 1.2641237179438274 seconds
+Avg cost 1.2538520556229813 seconds
+Avg cost 1.3199700798307148 seconds
+[INFO 20:47:13] my_main Recent Stats | t_env:      10345 | Episode:      232
+battle_won_mean:           0.0000	dead_allies_mean:          9.7500	dead_enemies_mean:         0.6250	ep_length_mean:           47.8750
+episode_in_buffer:       232.0000	epsilon:                   1.0000	grad_norm:                41.6282	loss_td:                   3.5915
+q_taken_mean:             -0.2044	return_max:                6.2430	return_mean:               2.2813	return_min:                0.8824
+return_std:                1.7190	target_mean:               0.0293	td_error_abs:              3.5915	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.4062	test_dead_enemies_mean:    0.0000	test_ep_length_mean:      50.6875	test_return_max:           0.0000
+test_return_mean:          0.0000	test_return_min:           0.0000	test_return_std:           0.0000	
+Avg cost 1.35816068649292 seconds
+[INFO 20:47:17] my_main t_env: 10664 / 10000000
+[INFO 20:47:17] my_main Estimated time left: 1 days, 26 minutes, 5 seconds. Time passed: 1 minutes, 47 seconds
+Avg cost 1.3551399856805804 seconds
+Avg cost 1.3854885381810806 seconds
+Avg cost 1.4117665555742054 seconds
+Avg cost 1.4014225257070443 seconds
+Avg cost 1.4222456693649295 seconds
+Avg cost 1.4478266806829545 seconds
+Avg cost 1.4383419643748891 seconds
+Avg cost 1.4552160864290984 seconds
+Avg cost 1.443592369556427 seconds
+Avg cost 1.4623960781097411 seconds
+Avg cost 1.4535143558795636 seconds
+Avg cost 1.4715876667587846 seconds
+Avg cost 1.470200708934239 seconds
+Avg cost 1.4847570945476665 seconds
+Avg cost 1.4774882634480795 seconds
+Avg cost 1.4681101998975201 seconds
+Avg cost 1.4664253070950508 seconds
+Avg cost 1.4773339285995022 seconds
+Avg cost 1.4978646180208992 seconds
+Avg cost 1.502120133808681 seconds
+[INFO 20:48:51] my_main Updated target network
+Avg cost 1.5115656322903104 seconds
+Avg cost 1.52160948676032 seconds
+Avg cost 1.529951660256637 seconds
+Avg cost 1.5229585109612882 seconds
+Avg cost 1.524665415287018 seconds
+[INFO 20:49:12] my_main Recent Stats | t_env:      20346 | Episode:      440
+battle_won_mean:           0.0000	dead_allies_mean:          9.5172	dead_enemies_mean:         0.4612	ep_length_mean:           44.3147
+episode_in_buffer:       440.0000	epsilon:                   0.9017	grad_norm:                10.0420	loss_td:                   0.7993
+q_taken_mean:              0.2146	return_max:               14.5047	return_mean:               2.3000	return_min:                0.1667
+return_std:                2.0727	target_mean:               0.1668	td_error_abs:              0.7993	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.3438	test_dead_enemies_mean:    0.0000	test_ep_length_mean:      58.6250	test_return_max:           0.0000
+test_return_mean:          0.0000	test_return_min:           0.0000	test_return_std:           0.0000	
+Avg cost 1.5301467209327513 seconds
+[INFO 20:49:16] my_main t_env: 20687 / 10000000
+[INFO 20:49:16] my_main Estimated time left: 1 days, 8 hours, 49 minutes, 59 seconds. Time passed: 3 minutes, 46 seconds
+Avg cost 1.5212354432968866 seconds
+Avg cost 1.5150793929432713 seconds
+Avg cost 1.517352656884627 seconds
+Avg cost 1.5260910616980659 seconds
+Avg cost 1.528454329656518 seconds
+Avg cost 1.5130691122501454 seconds
+Avg cost 1.5065368711948395 seconds
+Avg cost 1.5135821079721257 seconds
+Avg cost 1.528167281150818 seconds
+Avg cost 1.517562557669247 seconds
+Avg cost 1.5197136631378763 seconds
+Avg cost 1.5271872619412983 seconds
+Avg cost 1.5174391799502904 seconds
+Avg cost 1.5127323410727762 seconds
+Avg cost 1.5155758687428067 seconds
+Avg cost 1.511052081459447 seconds
+Avg cost 1.5025464830727413 seconds
+Avg cost 1.507999735363459 seconds
+Avg cost 1.5171373645464579 seconds
+[INFO 20:50:39] my_main Updated target network
+Avg cost 1.5226713673013155 seconds
+Avg cost 1.5279079906402095 seconds
+Avg cost 1.5229109771667966 seconds
+Avg cost 1.529346726834774 seconds
+Avg cost 1.5279740333557128 seconds
+Avg cost 1.5238384730888135 seconds
+Avg cost 1.5194301000281945 seconds
+[INFO 20:51:08] my_main Recent Stats | t_env:      30677 | Episode:      656
+battle_won_mean:           0.0000	dead_allies_mean:          9.5817	dead_enemies_mean:         0.3221	ep_length_mean:           48.1875
+episode_in_buffer:       656.0000	epsilon:                   0.8067	grad_norm:                 6.1513	loss_td:                   0.3570
+q_taken_mean:              0.1054	return_max:                8.6911	return_mean:               1.8559	return_min:                0.0478
+return_std:                1.4868	target_mean:               0.1342	td_error_abs:              0.3570	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.6562	test_dead_enemies_mean:    0.0312	test_ep_length_mean:      53.5625	test_return_max:           1.9476
+test_return_mean:          0.1864	test_return_min:           0.0000	test_return_std:           0.4131	
+Avg cost 1.5235293788068434 seconds
+[INFO 20:51:12] my_main t_env: 31029 / 10000000
+[INFO 20:51:12] my_main Estimated time left: 1 days, 7 hours, 4 minutes, 27 seconds. Time passed: 5 minutes, 42 seconds
+Avg cost 1.520084336184073 seconds
+Avg cost 1.5237071616309028 seconds
+Avg cost 1.526538056387028 seconds
+Avg cost 1.5226241979334088 seconds
+Avg cost 1.5193938131201756 seconds
+Avg cost 1.524938712248931 seconds
+Avg cost 1.5250678380330405 seconds
+Avg cost 1.5305066108703613 seconds
+Avg cost 1.5277746621664468 seconds
+Avg cost 1.5318052249077039 seconds
+Avg cost 1.5367544059511982 seconds
+Avg cost 1.53109709918499 seconds
+Avg cost 1.5367122756110296 seconds
+Avg cost 1.5406478643417358 seconds
+Avg cost 1.5398388311087368 seconds
+Avg cost 1.5347470130239216 seconds
+Avg cost 1.5329942002015957 seconds
+[INFO 20:52:35] my_main Updated target network
+Avg cost 1.5289378360260366 seconds
+Avg cost 1.5251073261787154 seconds
+Avg cost 1.5197414891286332 seconds
+Avg cost 1.5178834266876908 seconds
+Avg cost 1.523051412900289 seconds
+Avg cost 1.5287102369161754 seconds
+Avg cost 1.5365123360053354 seconds
+Avg cost 1.531673449341969 seconds
+Avg cost 1.527621312344328 seconds
+[INFO 20:53:11] my_main Recent Stats | t_env:      40962 | Episode:      872
+battle_won_mean:           0.0000	dead_allies_mean:          9.6481	dead_enemies_mean:         0.4028	ep_length_mean:           47.8796
+episode_in_buffer:       872.0000	epsilon:                   0.7086	grad_norm:                 0.5474	loss_td:                   0.2087
+q_taken_mean:              0.1294	return_max:                9.5730	return_mean:               2.2481	return_min:                0.1765
+return_std:                1.8946	target_mean:               0.1256	td_error_abs:              0.2087	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.5000	test_dead_enemies_mean:    0.0312	test_ep_length_mean:      57.6250	test_return_max:           1.7450
+test_return_mean:          0.5533	test_return_min:           0.0000	test_return_std:           0.4451	
+Avg cost 1.5256332021010552 seconds
+[INFO 20:53:15] my_main t_env: 41306 / 10000000
+[INFO 20:53:15] my_main Estimated time left: 1 days, 9 hours, 53 seconds. Time passed: 7 minutes, 44 seconds
+Avg cost 1.5265994916359586 seconds
+Avg cost 1.5301923948464937 seconds
+Avg cost 1.5341074028793649 seconds
+Avg cost 1.568791211253465 seconds
+Avg cost 1.5673210811614993 seconds
+Avg cost 1.5699524171281571 seconds
+Avg cost 1.567470428990383 seconds
+Avg cost 1.5674305702876121 seconds
+Avg cost 1.561335215201745 seconds
+Avg cost 1.5607817695254376 seconds
+Avg cost 1.5571533194128078 seconds
+Avg cost 1.554896183103045 seconds
+Avg cost 1.5560095089453243 seconds
+Avg cost 1.5511372833076973 seconds
+Avg cost 1.5475684447722007 seconds
+[INFO 20:54:40] my_main Updated target network
+Avg cost 1.5458837092459745 seconds
+Avg cost 1.5438555777072913 seconds
+Avg cost 1.5401102230612163 seconds
+Avg cost 1.542863843733805 seconds
+Avg cost 1.5770485587742025 seconds
+Avg cost 1.5743831046696375 seconds
+Avg cost 1.5725519351470172 seconds
+Avg cost 1.5694793280908623 seconds
+Avg cost 1.5662938686979926 seconds
+[INFO 20:55:21] my_main Recent Stats | t_env:      51103 | Episode:     1072
+battle_won_mean:           0.0000	dead_allies_mean:          9.5972	dead_enemies_mean:         0.5741	ep_length_mean:           47.5787
+episode_in_buffer:       1072.0000	epsilon:                   0.6109	grad_norm:                 1.2752	loss_td:                   0.1507
+q_taken_mean:              0.1388	return_max:               10.1422	return_mean:               2.7722	return_min:                0.3234
+return_std:                2.0031	target_mean:               0.1363	td_error_abs:              0.1507	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.5938	test_dead_enemies_mean:    0.8438	test_ep_length_mean:      50.9062	test_return_max:          10.9118
+test_return_mean:          4.1318	test_return_min:           1.5281	test_return_std:           1.9695	
+Avg cost 1.5685562749703732 seconds
+[INFO 20:55:26] my_main t_env: 51479 / 10000000
+[INFO 20:55:26] my_main Estimated time left: 1 days, 11 hours, 41 minutes, 32 seconds. Time passed: 9 minutes, 56 seconds
+Avg cost 1.5660667951442 seconds
+Avg cost 1.5928097748365566 seconds
+Avg cost 1.5953002964578031 seconds
+Avg cost 1.594677106026681 seconds
+Avg cost 1.6212220916748052 seconds
+Avg cost 1.6157345128437834 seconds
+Avg cost 1.6147121650966139 seconds
+Avg cost 1.6405526287853722 seconds
+Avg cost 1.6404527564381448 seconds
+Avg cost 1.6379898749865023 seconds
+Avg cost 1.6624634557097928 seconds
+Avg cost 1.6636323368910593 seconds
+Avg cost 1.6589759794392986 seconds
+Avg cost 1.6548028116795561 seconds
+Avg cost 1.6782741670255314 seconds
+[INFO 20:56:58] my_main Updated target network
+Avg cost 1.6795587995473082 seconds
+Avg cost 1.6801527051159941 seconds
+Avg cost 1.6883359387301022 seconds
+Avg cost 1.685423478805762 seconds
+Avg cost 1.6812729273523608 seconds
+Avg cost 1.6776626634259602 seconds
+Avg cost 1.675064797132788 seconds
+Avg cost 1.6850291198783827 seconds
+Avg cost 1.6944998784197707 seconds
+Avg cost 1.6939948147740862 seconds
+[INFO 20:57:51] my_main Recent Stats | t_env:      61378 | Episode:     1280
+battle_won_mean:           0.0000	dead_allies_mean:          9.5700	dead_enemies_mean:         0.8000	ep_length_mean:           50.8650
+episode_in_buffer:       1280.0000	epsilon:                   0.5145	grad_norm:                 0.8990	loss_td:                   0.1078
+q_taken_mean:              0.1528	return_max:               16.1221	return_mean:               3.5667	return_min:                0.7167
+return_std:                2.3935	target_mean:               0.1476	td_error_abs:              0.1078	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.1875	test_dead_enemies_mean:    0.9688	test_ep_length_mean:      47.7812	test_return_max:           9.1333
+test_return_mean:          3.7514	test_return_min:           0.6841	test_return_std:           2.2210	
+Avg cost 1.6907726983501492 seconds
+[INFO 20:57:55] my_main t_env: 61763 / 10000000
+[INFO 20:57:55] my_main Estimated time left: 1 days, 16 hours, 52 seconds. Time passed: 12 minutes, 25 seconds
+Avg cost 1.6914522550543967 seconds
+Avg cost 1.6890011655317776 seconds
+Avg cost 1.684934776101337 seconds
+Avg cost 1.682259567578634 seconds
+Avg cost 1.6792028850277532 seconds
+Avg cost 1.6799182923216573 seconds
+Avg cost 1.6763750743242656 seconds
+Avg cost 1.6757389260576923 seconds
+Avg cost 1.6764512984983388 seconds
+Avg cost 1.6847413197541854 seconds
+Avg cost 1.7048082746517892 seconds
+Avg cost 1.7017805878120138 seconds
+Avg cost 1.6986831554076962 seconds
+Avg cost 1.6951244771480567 seconds
+[INFO 20:59:08] my_main Updated target network
+Avg cost 1.6913020033273645 seconds
+Avg cost 1.688903545155938 seconds
+Avg cost 1.68773091790135 seconds
+Avg cost 1.6846667033870053 seconds
+Avg cost 1.6852330496816932 seconds
+Avg cost 1.6924362484231061 seconds
+Avg cost 1.6900187637991542 seconds
+Avg cost 1.6904145862374995 seconds
+Avg cost 1.6986325492520313 seconds
+Avg cost 1.697367586809047 seconds
+Avg cost 1.7043152594426927 seconds
+[INFO 21:00:01] my_main Recent Stats | t_env:      71485 | Episode:     1488
+battle_won_mean:           0.0000	dead_allies_mean:          9.5240	dead_enemies_mean:         0.9904	ep_length_mean:           49.4423
+episode_in_buffer:       1488.0000	epsilon:                   0.4169	grad_norm:                 0.9260	loss_td:                   0.0826
+q_taken_mean:              0.1498	return_max:               16.2779	return_mean:               3.9920	return_min:                0.0259
+return_std:                2.6937	target_mean:               0.1513	td_error_abs:              0.0826	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.5938	test_dead_enemies_mean:    2.0000	test_ep_length_mean:      47.5938	test_return_max:          12.5100
+test_return_mean:          4.8967	test_return_min:           1.1968	test_return_std:           3.0115	
+Avg cost 1.6998270833215057 seconds
+[INFO 21:00:04] my_main t_env: 71895 / 10000000
+[INFO 21:00:04] my_main Estimated time left: 1 days, 11 hours, 13 minutes, 25 seconds. Time passed: 14 minutes, 34 seconds
+Avg cost 1.6965885382856256 seconds
+Avg cost 1.693748608402823 seconds
+Avg cost 1.6908346421378009 seconds
+Avg cost 1.6906719614158987 seconds
+Avg cost 1.7136875586321134 seconds
+Avg cost 1.7154786948407643 seconds
+Avg cost 1.7118218184849412 seconds
+Avg cost 1.710707738664416 seconds
+Avg cost 1.7078522371323737 seconds
+Avg cost 1.7050150541158833 seconds
+Avg cost 1.7018399590351552 seconds
+Avg cost 1.7004777944606293 seconds
+Avg cost 1.699174081957019 seconds
+[INFO 21:01:22] my_main Updated target network
+Avg cost 1.700798024413407 seconds
+Avg cost 1.6990545726714934 seconds
+Avg cost 1.702806959760951 seconds
+Avg cost 1.7091570997995054 seconds
+Avg cost 1.7120100987584976 seconds
+Avg cost 1.7116962328007093 seconds
+Avg cost 1.7097829406460134 seconds
+Avg cost 1.7066265177850286 seconds
+Avg cost 1.704810345295779 seconds
+[INFO 21:02:10] my_main Recent Stats | t_env:      81582 | Episode:     1672
+battle_won_mean:           0.0000	dead_allies_mean:          9.5144	dead_enemies_mean:         1.0962	ep_length_mean:           48.7115
+episode_in_buffer:       1672.0000	epsilon:                   0.3209	grad_norm:                 0.8670	loss_td:                   0.0662
+q_taken_mean:              0.1525	return_max:               17.0280	return_mean:               4.1663	return_min:                0.4400
+return_std:                2.9979	target_mean:               0.1530	td_error_abs:              0.0662	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.3438	test_dead_enemies_mean:    1.9062	test_ep_length_mean:      49.0938	test_return_max:          11.7157
+test_return_mean:          5.2377	test_return_min:           1.5399	test_return_std:           2.9311	
+Avg cost 1.710694865691357 seconds
+[INFO 21:02:15] my_main t_env: 81913 / 10000000
+[INFO 21:02:15] my_main Estimated time left: 1 days, 11 hours, 58 minutes, 0 seconds. Time passed: 16 minutes, 45 seconds
+Avg cost 1.7264259275125005 seconds
+Avg cost 1.7253437816794155 seconds
+Avg cost 1.7223381237550222 seconds
+Avg cost 1.71899454557716 seconds
+Avg cost 1.71930338382721 seconds
+Avg cost 1.7181354612853401 seconds
+Avg cost 1.724343072069754 seconds
+Avg cost 1.7249170606359476 seconds
+Avg cost 1.7308087173630213 seconds
+Avg cost 1.7282353029018498 seconds
+Avg cost 1.7334326679266776 seconds
+Avg cost 1.7307039159507571 seconds
+Avg cost 1.7319002701685984 seconds
+Avg cost 1.729142057838623 seconds
+Avg cost 1.7300225450879056 seconds
+[INFO 21:03:47] my_main Updated target network
+Avg cost 1.7254575010724547 seconds
+Avg cost 1.728294765049557 seconds
+Avg cost 1.725153095845326 seconds
+Avg cost 1.7199085616619794 seconds
+Avg cost 1.7232693439306221 seconds
+Avg cost 1.7263626688056528 seconds
+Avg cost 1.721361695346745 seconds
+[INFO 21:04:27] my_main Recent Stats | t_env:      91621 | Episode:     1856
+battle_won_mean:           0.0109	dead_allies_mean:          9.5435	dead_enemies_mean:         1.0054	ep_length_mean:           54.4457
+episode_in_buffer:       1856.0000	epsilon:                   0.2250	grad_norm:                 0.8564	loss_td:                   0.0622
+q_taken_mean:              0.1595	return_max:               20.1768	return_mean:               4.0222	return_min:                0.3177
+return_std:                3.3208	target_mean:               0.1643	td_error_abs:              0.0622	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.6562	test_dead_enemies_mean:    1.4062	test_ep_length_mean:      46.5000	test_return_max:          14.4511
+test_return_mean:          4.3162	test_return_min:           1.4466	test_return_std:           3.0550	
+Avg cost 1.716677413074249 seconds
+[INFO 21:04:30] my_main t_env: 91979 / 10000000
+[INFO 21:04:30] my_main Estimated time left: 1 days, 12 hours, 52 minutes, 3 seconds. Time passed: 19 minutes, 0 seconds
+Avg cost 1.7143709354749015 seconds
+Avg cost 1.718366858092222 seconds
+Avg cost 1.7147527129401994 seconds
+Avg cost 1.7189684569298689 seconds
+Avg cost 1.716103241582623 seconds
+Avg cost 1.7111355811357503 seconds
+Avg cost 1.7159069972568093 seconds
+Avg cost 1.7139211808685713 seconds
+Avg cost 1.7095535410658382 seconds
+Avg cost 1.7120086822593426 seconds
+Avg cost 1.7148206858655775 seconds
+Avg cost 1.710682176507038 seconds
+Avg cost 1.7066230123693296 seconds
+Avg cost 1.7029429972171786 seconds
+Avg cost 1.6985264673765128 seconds
+Avg cost 1.6957685224011416 seconds
+Avg cost 1.6951538329428817 seconds
+[INFO 21:05:57] my_main Updated target network
+Avg cost 1.6917265673815196 seconds
+Avg cost 1.687338255628755 seconds
+Avg cost 1.6864536990638543 seconds
+Avg cost 1.683002462945723 seconds
+Avg cost 1.6875154584646228 seconds
+Avg cost 1.6861049950864804 seconds
+Avg cost 1.6886784626432692 seconds
+Avg cost 1.6912677925800594 seconds
+[INFO 21:06:36] my_main Recent Stats | t_env:     101956 | Episode:     2064
+battle_won_mean:           0.0109	dead_allies_mean:          9.3804	dead_enemies_mean:         1.4293	ep_length_mean:           54.7065
+episode_in_buffer:       2064.0000	epsilon:                   0.1296	grad_norm:                 0.8920	loss_td:                   0.0574
+q_taken_mean:              0.1647	return_max:               20.6479	return_mean:               4.5846	return_min:                0.2353
+return_std:                3.6315	target_mean:               0.1618	td_error_abs:              0.0574	test_battle_won_mean:      0.0000
+test_dead_allies_mean:     9.3750	test_dead_enemies_mean:    0.9688	test_ep_length_mean:      47.5312	test_return_max:           7.9009
+test_return_mean:          3.0999	test_return_min:           1.4107	test_return_std:           1.3376	
+Avg cost 1.6941914245730545 seconds
+[INFO 21:06:42] my_main t_env: 102351 / 10000000
+[INFO 21:06:42] my_main Estimated time left: 1 days, 10 hours, 59 minutes, 36 seconds. Time passed: 21 minutes, 12 seconds
