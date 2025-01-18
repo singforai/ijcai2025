@@ -34,7 +34,8 @@ def my_main(_run, _config, _log):
     th.manual_seed(config["seed"])
     th.cuda.manual_seed(config["seed"])
     # th.cuda.manual_seed_all(config["seed"])
-    th.backends.cudnn.deterministic = True  # cudnn
+    th.backends.cudnn.deterministic = True  
+    th.backends.cudnn.benchmark = False
 
 
     config['env_args']['seed'] = config["seed"]

@@ -15,8 +15,11 @@ class Logger:
         self.stats = defaultdict(lambda: [])
 
     def setup_wandb(self, log_dir, args):
-        # Import here so it doesn't have to be installed if you don't use it
-        #from tensorboard_logger import configure, log_value
+
+        if args.use_CL:
+            args.env_args['capability_config']['n_units'] = args.curriculum_menu[-1].split('v')[0]
+            args.env_args['capability_config']['n_enemies'] = args.curriculum_menu[-1].split('v')[1]
+        
         if "sc2_v2" in args.env:
             n_agents = args.env_args['capability_config']['n_units']
             n_enemies = args.env_args['capability_config']['n_enemies']

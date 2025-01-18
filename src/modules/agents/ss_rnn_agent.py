@@ -46,7 +46,6 @@ class SS_RNNAgent(nn.Module):
             d = self.hidden_size, 
             h = self.n_head,
         )
-        
 
     def init_hidden(self):
         # make hidden states on same device as model
